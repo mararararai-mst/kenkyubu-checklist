@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>研究部チェックリスト</title>
+<meta name="robots" content="noindex">
+<meta property="og:title" content="研究部チェックリスト">
+<meta property="og:description" content="次の研究部会までにやることと担当の一覧">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* 見た目は授業のミトオシにそろえる（クリーム地・白いパネル・押すと太枠のボタン） */
+:root{--ink:#1f2a24;--sub:#5f6b64;--line:#e6e0d6;--bg:#f4ece0;--tag:#ecebf1;--soon:#f5aaa0;--near:#f7c98a;--doneink:#9a948a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","Yu Gothic UI",sans-serif;font-weight:500}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:clamp(20px,5.4vw,26px);margin:0 0 10px;font-weight:700}
+.meet{background:#fff;border-radius:12px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;box-shadow:inset 0 0 0 3px var(--ink)}
+.meet b{font-size:18px}
+.meet .left{font-weight:700}
+.meet .note{color:var(--sub);font-size:14px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 0}
+.bar .lb{color:var(--sub);font-size:13px;margin-right:2px}
+.bar button{font:inherit;font-size:14px;font-weight:700;background:#fff;color:#66615a;border:3px solid transparent;border-radius:8px;padding:5px 12px;cursor:pointer}
+.bar button[aria-pressed="true"]{border-color:var(--ink);color:var(--ink)}
+.bar button:active{transform:translateY(2px)}
+.prog{display:flex;align-items:center;gap:10px;margin:14px 0 4px;font-size:14px}
+.track{flex:1;height:8px;background:#e2d8c8;border-radius:99px;overflow:hidden}
+.fill{height:100%;background:var(--ink);width:0}
+.panel{background:#fff;border-radius:12px;padding:14px 16px;margin-top:14px}
+.panel h2{font-size:17px;margin:0 0 4px;display:flex;justify-content:space-between;gap:8px;font-weight:700}
+.panel h2 small{color:var(--sub);font-size:13px;font-weight:500;white-space:nowrap}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+li:first-child{border-top:0}
+li.sub{padding-left:28px}
+.box{flex:none;width:20px;height:20px;margin-top:2px;border:2px solid var(--ink);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;line-height:1}
+li.done .box{background:var(--ink);color:#fff}
+.body{min-width:0;flex:1;display:flex;flex-direction:column;gap:5px}
+.text{font-size:15px;line-height:1.6;text-wrap:pretty;overflow-wrap:anywhere}
+li.done .text{color:var(--doneink);text-decoration:line-through}
+.meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.tag{font-size:12px;padding:1px 9px;border-radius:99px;background:var(--tag);color:#4f4b5a;border:2px solid transparent}
+.tag.me{border-color:var(--ink);color:var(--ink);font-weight:700}
+.due{font-size:12px;padding:1px 9px;border-radius:99px;background:#fff;border:2px solid var(--ink);font-weight:700}
+.due.near{background:var(--near)}
+.due.soon{background:var(--soon)}
+.note{font-size:12px;color:var(--sub)}
+.donedate{font-size:12px;color:var(--sub)}
+.empty{color:var(--sub);font-size:14px;margin:18px 0 0}
+.foot{color:var(--sub);font-size:12px;line-height:1.8;margin-top:18px}
+li.ctx{opacity:.45}
+.off{display:none}
+</style></head><body><div class="wrap">
+<h1 id="title"></h1>
+<div class="meet" id="meet"></div>
+<div class="bar" id="who"><span class="lb">担当</span></div>
+<div class="bar" id="pastbar"><span class="lb">終わったもの</span><button type="button" data-past="show" aria-pressed="true">出す</button><button type="button" data-past="hide" aria-pressed="false">隠す</button></div>
+<div class="prog"><div class="track"><div class="fill" id="fill"></div></div><span id="count"></span></div>
+<div id="list"></div>
+<p class="foot" id="foot"></p>
+</div>
+<script>
+var D = {"title": "研究部チェックリスト", "meeting": {"label": "次回研究部会", "date": "2026-12-08", "note": "1・2・3月の提案"}, "updated": "2026-11-10", "groups": [{"key": "rainendo", "title": "来年度の研究"}, {"key": "jugyo", "title": "研究授業"}, {"key": "wakamatsu", "title": "若松先生の講評（10/27の研究授業）"}, {"key": "jugyo0128", "title": "1/28 研究授業"}, {"key": "week", "title": "見に行く公開week"}, {"key": "kenshu", "title": "職員研修"}, {"key": "miniken", "title": "ミニ研"}, {"key": "katei", "title": "家庭学習"}], "items": [{"id": "a01", "group": "rainendo", "text": "来年度の研究テーマについて", "who": ["新井", "谷口", "矢野"]}, {"id": "a02", "group": "rainendo", "text": "来年度の研究体制について", "who": ["新井", "谷口", "矢野"]}, {"id": "a03", "group": "jugyo", "text": "研究授業の振り返り共有", "who": ["新居"]}, {"id": "a04", "group": "jugyo", "text": "授業見学シートのフォーマット編集", "who": ["新井"], "sub": true}, {"id": "a05", "group": "jugyo", "text": "指導案検討のもちかたを検討（変える？そのまま？）", "who": ["廣田", "新居", "新井", "矢野"]}, {"id": "a06", "group": "jugyo", "text": "研究授業の講師依頼（新井 → 新居・廣田）", "who": ["新井"]}, {"id": "a07", "group": "jugyo", "text": "授業づくりシートの催促（小学部）", "note": "いちど声かけ済み", "who": ["矢野"]}, {"id": "a08", "group": "jugyo", "text": "授業づくりシートの催促（中学部）", "note": "いちど声かけ済み", "who": ["杉浦", "上仲"]}, {"id": "b01", "group": "wakamatsu", "text": "2本目の動画講評の依頼書を作って送る", "due": "2026-11-13", "who": ["新井"]}, {"id": "b02", "group": "wakamatsu", "text": "講評用の資料をそろえる（指導案2本・授業の動画や写真・研究協議の記録）", "who": ["新井"]}, {"id": "b03", "group": "wakamatsu", "text": "講評動画を受け取り、職員に視聴を案内する", "due": "2026-12-15", "who": ["新井"]}, {"id": "c01", "group": "jugyo0128", "text": "授業者・時程を決める（指導案検討②も）", "who": ["新井"]}, {"id": "c02", "group": "jugyo0128", "text": "中籍の研究授業者を決める", "who": ["新井"]}, {"id": "c03", "group": "jugyo0128", "text": "協議の講評講師を決めて依頼する", "who": ["新井"]}, {"id": "c04", "group": "jugyo0128", "text": "実施要項を教育センターへ出す", "due": "2026-12-18", "who": ["新井"]}, {"id": "c05", "group": "jugyo0128", "text": "受付・名簿・案内板・印刷の段取り", "due": "2027-01-21", "who": ["新井"]}, {"id": "c06", "group": "jugyo0128", "text": "研究協議のあとの総括の準備", "due": "2027-01-27", "who": ["新井"]}, {"id": "a09", "group": "week", "text": "入力確認 → 催促（西館2・3・6年）", "note": "いちど声かけ済み", "who": ["玉野"]}, {"id": "a10", "group": "kenshu", "text": "3月の職員研修の内容について", "who": ["兵頭", "上仲", "原"]}, {"id": "a11", "group": "miniken", "text": "11月のミニ研", "who": ["兵頭", "上仲", "原"]}, {"id": "a12", "group": "katei", "text": "9年プロジェクトの入力確認 → 催促", "note": "いちど声かけ済み", "who": ["梅木"]}]};
+(function(){
+  var DOW = '日月火水木金土';
+  function zen(x){ return String(x).replace(/[0-9]/g, function(d){ return String.fromCharCode(d.charCodeAt(0) + 0xFEE0); }).replace(/\//g, '／'); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function ymd(dt){ return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' + ('0' + dt.getDate()).slice(-2); }
+  function parse(s){ var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function md(s){ var d = parse(s); return zen((d.getMonth() + 1) + '/' + d.getDate()) + '（' + DOW[d.getDay()] + '）'; }
+  var today = ymd(new Date());
+  function daysTo(s){ return Math.round((parse(s) - parse(today)) / 86400000); }
+
+  document.getElementById('title').textContent = D.title;
+  var m = D.meeting, left = daysTo(m.date);
+  document.getElementById('meet').innerHTML = '<b>' + esc(m.label) + '　' + md(m.date) + '</b>' +
+    (left >= 0 ? '<span class="left">' + (left === 0 ? '今日' : 'あと' + zen(left) + '日') + '</span>' : '') +
+    '<span class="note">' + esc(zen(m.note)) + '</span>';
+
+  // 担当のボタン：出てくる順。?t=新井 で最初からその人だけにできる
+  var people = [];
+  D.items.forEach(function(i){ i.who.forEach(function(w){ if (people.indexOf(w) < 0) people.push(w); }); });
+  var q = new URLSearchParams(location.search);
+  var me = q.get('t') || '';
+  if (people.indexOf(me) < 0) me = '';
+  var past = q.get('past') === 'hide' ? 'hide' : 'show';
+  var wb = document.getElementById('who');
+  [''].concat(people).forEach(function(p){
+    var b = document.createElement('button');
+    b.type = 'button'; b.dataset.t = p; b.textContent = p || 'ぜんぶ';
+    b.addEventListener('click', function(){ me = p; render(); });
+    wb.appendChild(b);
+  });
+  document.querySelectorAll('#pastbar button').forEach(function(b){
+    b.addEventListener('click', function(){ past = b.dataset.past; render(); });
+  });
+
+  function itemHTML(i){
+    var cls = (i.sub ? 'sub ' : '') + (i.done ? 'done' : '');
+    var due = '';
+    if (i.due && !i.done){
+      var k = daysTo(i.due), c = k <= 3 ? ' soon' : (k <= 10 ? ' near' : '');
+      due = '<span class="due' + c + '">〆' + md(i.due) + (k < 0 ? '　すぎています' : '') + '</span>';
+    }
+    var tags = i.who.map(function(w){ return '<span class="tag' + (w === me ? ' me' : '') + '">' + esc(w) + '</span>'; }).join('');
+    return '<li class="' + cls + '"><span class="box" aria-label="' + (i.done ? '済み' : 'まだ') + '">' + (i.done ? '✓' : '') + '</span>' +
+      '<span class="body"><span class="text">' + (i.sub ? '→ ' : '') + esc(zen(i.text)) + '</span>' +
+      '<span class="meta">' + tags + due +
+      (i.note ? '<span class="note">※' + esc(zen(i.note)) + '</span>' : '') +
+      (i.done ? '<span class="donedate">' + md(i.done) + ' 済み</span>' : '') +
+      '</span></span></li>';
+  }
+
+  function render(){
+    wb.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.t === me ? 'true' : 'false'); });
+    document.querySelectorAll('#pastbar button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.past === past ? 'true' : 'false'); });
+    var mine = D.items.filter(function(i){ return !me || i.who.indexOf(me) >= 0; });
+    // 小項目（→）だけが当たったときは、親の項目も薄く出す（数には入れない）
+    var ctx = {};
+    D.items.forEach(function(i, n){
+      if (!i.sub || mine.indexOf(i) < 0) return;
+      for (var k = n - 1; k >= 0; k--){ var p = D.items[k]; if (!p.sub){ if (mine.indexOf(p) < 0) ctx[p.id] = true; break; } }
+    });
+    var done = mine.filter(function(i){ return i.done; }).length;
+    document.getElementById('count').textContent = (me ? me + 'さん　' : '') + zen(done) + '／' + zen(mine.length) + ' 完了';
+    document.getElementById('fill').style.width = (mine.length ? done / mine.length * 100 : 0) + '%';
+    var html = '';
+    D.groups.forEach(function(g){
+      var gi = mine.filter(function(i){ return i.group === g.key; });
+      var gd = gi.filter(function(i){ return i.done; }).length;
+      var shown = D.items.filter(function(i){ return i.group === g.key && (mine.indexOf(i) >= 0 || ctx[i.id]) && (past === 'show' || !i.done || ctx[i.id]); });
+      if (!shown.filter(function(i){ return !ctx[i.id]; }).length) return;
+      html += '<section class="panel"><h2>' + esc(zen(g.title)) + '<small>' + zen(gd) + '／' + zen(gi.length) + '</small></h2><ul>' +
+        shown.map(function(i){ var h = itemHTML(i); return ctx[i.id] ? h.replace('<li class="', '<li class="ctx ') : h; }).join('') + '</ul></section>';
+    });
+    if (!html) html = '<p class="empty">' + (mine.length ? 'ぜんぶ終わっています。' : 'この人の担当はありません。') + '</p>';
+    document.getElementById('list').innerHTML = html;
+    var u = new URL(location.href);
+    if (me) u.searchParams.set('t', me); else u.searchParams.delete('t');
+    if (past === 'hide') u.searchParams.set('past', 'hide'); else u.searchParams.delete('past');
+    history.replaceState(null, '', u);
+  }
+  document.getElementById('foot').innerHTML = '更新　' + md(D.updated) + '<br>直したいこと・終わったことは新井まで。';
+  render();
+})();
+</script>
+</body></html>
